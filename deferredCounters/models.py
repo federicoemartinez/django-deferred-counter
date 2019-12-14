@@ -1,9 +1,9 @@
 from django.db import models
-from django.db.models.functions import Coalesce
-from django.db.models import Sum
 from django.db import transaction
+from django.db.models import Sum
+from django.db.models.functions import Coalesce
 
-# Create your models here.
+
 class DeferredCounterManager(models.Manager):
 
     def with_computed_value(self):
@@ -12,7 +12,6 @@ class DeferredCounterManager(models.Manager):
 
 
 class DeferredCounter(models.Model):
-
     objects = DeferredCounterManager()
 
     current_value = models.IntegerField(default=0)
@@ -21,7 +20,7 @@ class DeferredCounter(models.Model):
         self.modify(add)
 
     def decrement(self, subs=1):
-        self.modify(-1*subs)
+        self.modify(-1 * subs)
 
     def modify(self, value):
         if self.pk:
@@ -29,7 +28,7 @@ class DeferredCounter(models.Model):
             change.save()
             self.counterchanges_set.add(change)
         else:
-            self.current_value+=value
+            self.current_value += value
 
     def immediate_modify(self, value):
         self.current_value += value
@@ -38,12 +37,11 @@ class DeferredCounter(models.Model):
         self.immediate_modify(add)
 
     def immediate_decrement(self, subs=1):
-        self.immediate_modify(-1*subs)
+        self.immediate_modify(-1 * subs)
 
     def compute_value(self):
         changes = self.counterchanges_set.all().aggregate(Sum('change'))['change__sum']
         return self.current_value + (changes if changes else 0)
-
 
 
 class CounterChangesManager(models.Manager):
@@ -71,6 +69,3 @@ class CounterChanges(models.Model):
     change = models.IntegerField()
 
     objects = CounterChangesManager()
-
-
-

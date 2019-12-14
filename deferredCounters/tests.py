@@ -1,8 +1,9 @@
-from django.test import TestCase
-
 # Create your tests here.
 from django.test import TestCase
+
 from deferredCounters.models import DeferredCounter, CounterChanges
+
+
 class DeferredCounterlTestCase(TestCase):
     def setUp(self):
         self.counter = DeferredCounter.objects.create()
@@ -42,7 +43,7 @@ class DeferredCounterlTestCase(TestCase):
 
     def test_with_computed_value(self):
         self.counter2.increment()
-        c2 = DeferredCounter.objects.with_computed_value().filter(id = self.counter2.id)[0]
+        c2 = DeferredCounter.objects.with_computed_value().filter(id=self.counter2.id)[0]
         self.assertEqual(c2.computed_value, 1)
         c = DeferredCounter.objects.with_computed_value().filter(id__in=(self.counter.id, self.counter2.id))
         for each in c:
@@ -50,5 +51,3 @@ class DeferredCounterlTestCase(TestCase):
                 self.assertEqual(each.computed_value, 0)
             else:
                 self.assertEqual(each.computed_value, 1)
-
-
